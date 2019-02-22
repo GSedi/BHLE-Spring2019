@@ -1,5 +1,13 @@
 package Shaping
 
+object Circle {
+
+  def circleFactory(radius: Double): Circle = {
+    Circle(radius)
+  }
+
+}
+
 case class Circle(radius: Double) extends Shape{
 
   override def sides(): Int = 0
