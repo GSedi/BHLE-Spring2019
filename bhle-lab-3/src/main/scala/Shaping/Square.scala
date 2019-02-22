@@ -1,9 +1,7 @@
 package Shaping
 
 
-case class Square(side: Double) extends Shape{
-
-  override def sides(): Int = 4
+case class Square(side: Double) extends Rectangular with Shape {
 
   override def perimeter(): Double = 4 * side
 
