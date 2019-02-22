@@ -27,4 +27,14 @@ object Boot extends App {
 
   }
 
+  case object Source extends Enumeration {
+    type Source = Value
+    val well, spring, tap = Value
+  }
+  import Source._
+
+  case class BottledWater(size: Int, source: Source, carbonated: Boolean)
+
+
+  val bw = BottledWater(12, Source.spring, true)
 }
