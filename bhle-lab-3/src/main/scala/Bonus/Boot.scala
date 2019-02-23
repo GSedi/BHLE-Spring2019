@@ -30,4 +30,29 @@ object Boot extends App {
 //      printList(tail)
 //  }
 //  printList(asd)
+
+
+  sealed trait GenericList[A] {
+
+    def length(cnt: Int = 0): Int = this match {
+      case GenericEnd => cnt
+      case GenericNode(head, tail) => tail.length(cnt + 1)
+    }
+
+    def map[B](f: A => B): GenericList[B] = this match {
+      case GenericEnd => GenericEnd()
+      case GenericNode(head, tail) => {
+        GenericNode(f(head), tail.map[B](f))
+      }
+  }
+
+  case object GenericEnd extends GenericList[Any]
+  case class GenericNode(head: Any, tail: GenericList[Any]) extends GenericList[Any]
+
+
+  val genericList: GenericList[Int] = GenericNode(1, GenericNode(2, GenericNode(3, GenericEnd())))
+
+  assert(genericList.map(x => x + 8) == GenericNode(1 + 8, GenericNode(2 + 8, GenericNode(3 + 8, GenericEnd()))))
+  assert(genericList.map(x => x.toString) == GenericNode("1", GenericNode("2", GenericNode("3", GenericEnd()))))
+
 }
