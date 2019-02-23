@@ -23,6 +23,8 @@ object Boot extends App {
 //        val newNode: IntList = Node(head * 2, intList)
 //        tail.double(newNode)
         Node(head * 2, tail.double(intList))
+//        intList.append(head * 2)
+//        tail.double(intList)
       }
     }
   }

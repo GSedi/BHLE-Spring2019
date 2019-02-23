@@ -35,19 +35,21 @@ object Boot extends App {
   sealed trait GenericList[A] {
 
     def length(cnt: Int = 0): Int = this match {
-      case GenericEnd => cnt
+      case GenericEnd() => cnt
       case GenericNode(head, tail) => tail.length(cnt + 1)
     }
 
     def map[B](f: A => B): GenericList[B] = this match {
-      case GenericEnd => GenericEnd()
+      case GenericEnd() => GenericEnd()
       case GenericNode(head, tail) => {
-        GenericNode(f(head), tail.map[B](f))
+        GenericNode(f(head), tail.map(f))
       }
+
+    }
   }
 
-  case object GenericEnd extends GenericList[Any]
-  case class GenericNode(head: Any, tail: GenericList[Any]) extends GenericList[Any]
+  case class GenericEnd[T]() extends GenericList[T]
+  case class GenericNode[T](head: T, tail: GenericList[T]) extends GenericList[T]
 
 
   val genericList: GenericList[Int] = GenericNode(1, GenericNode(2, GenericNode(3, GenericEnd())))
