@@ -1,7 +1,15 @@
 package part1
 
 // Theoretical questions: why do we need abstraction
+  /*
+      At a higher level, Abstraction is a process of
+      hiding the implementation details and showing only functionality to the user.
+   */
 // How `traits` in Scala are used?
+  /*
+    Interface + Abstract
+   */
+
 
 trait Animal {
   // Is this abstract or concrete (implemented) member?
@@ -18,6 +26,10 @@ trait Walks {
 
   // Is this abstract or concrete (implemented) member?
   // Why `name` parameter is available here?
+  /*
+    Mixses two trait, to make available methods in extendend class
+    without importing it
+   */
   def walk: String = s"$name is walking"
 
 }
