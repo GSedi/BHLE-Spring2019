@@ -58,9 +58,7 @@ object Boot extends App{
   }
 
   // Task 5
-  def nolanFilms() = {
-    nolan.films.map(film => film.name)
-  }
+  def nolanFilms() = nolan.films.map(film => film.name)
 
   // Task 6
   def  cinephile() = {
@@ -68,9 +66,9 @@ object Boot extends App{
   }
 
   // Task 7
-  def  vintageMcTiernan() = {
-    val asd = mcTiernan.films.sortBy(_.yearOfRelease)
-    asd(0)
+  def vintageMcTiernan() = {
+    val asd = mcTiernan.films.sortBy(_.yearOfRelease).map(film => film.yearOfRelease)
+    asd.headOption
   }
 
   // Task 8
@@ -93,13 +91,13 @@ object Boot extends App{
   // Task 11
   def fromTheArchives() = {
     val asd = directors.flatMap(dir => dir.films).sortBy(_.yearOfRelease)
-    asd(0)
+    asd.headOption
   }
 
   // Options
 
   // Task 1
-  def divide(a: Int, b: Int) = {
+  def divide(a: Int, b: Int): Option[Int] = {
     if ( b != 0) Some(a/b) else  None
   }
 
@@ -108,16 +106,26 @@ object Boot extends App{
     if(str matches "\\d+") Some(str.toInt) else None
 
   def calcOfOptionsUsingFor(opt1: Option[Int], operator:String, opt2: Option[Int]) = {
-    for {
-      value1 <- opt1
-      value2 <- opt2
-    } yield operator match {
-      case "+" => value1 + value2
-      case "-" => value1 - value2
-      case "*" => value1 * value2
-      case "/" => if (value2 != 0) (value1/value2) else None
-      case  _ => None
+
+    operator match {
+      case "+" => opt1.flatMap{val1 => opt2.map {val2 => val1 + val2}}
+      case "-" => opt1.flatMap{val1 => opt2.map {val2 => val1 - val2}}
+      case "*" => opt1.flatMap{val1 => opt2.map {val2 => val1 * val2}}
+      case "/" => opt1.flatMap{val1 => opt2.flatMap {val2 => divide(val1, val2)}}
+      case _ => None
     }
+
+//    /*val temp =*/ for {
+//      value1 <- opt1
+//      value2 <- opt2
+//    } yield operator match {
+//      case "+" => value1 + value2
+//      case "-" => value1 - value2
+//      case "*" => value1 * value2
+//      case "/" => divide(value1, value2).flatten
+//      case  _  => None
+//    }
+////    temp.flatten
   }
 
   def calculator(operand1: String, operator: String, operand2: String) = {
@@ -126,6 +134,6 @@ object Boot extends App{
     calcOfOptionsUsingFor(opt1, operator, opt2)
   }
 
-  println(calculator("4", "k", "9"))
-
+  println(calculator("4", "f", "0"))
+  val opt: Option[Int] = None
 }
