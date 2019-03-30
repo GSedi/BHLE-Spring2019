@@ -4,18 +4,12 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives.path
-import models.{AccountModelPostPut, AccountModelGet, ClientModelGet, ClientModelPostPut, ReplenishAnAccountModel, WithdrawFromAccountModel}
+import models.{AccountModelGet, AccountModelPostPut, BalanceTransfer, ClientModelGet, ClientModelPostPut, ReplenishAnAccountModel, WithdrawFromAccountModel}
 
 import scala.concurrent.{Await, ExecutionContextExecutor}
-import scala.util.{Failure, Success, Try}
-
-//import scala.io.StdIn
-
 import akka.actor.ActorSystem
-
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-
 import akka.http.scaladsl.server.Directives._
 import akka.pattern.ask
 import akka.util.Timeout
@@ -25,7 +19,7 @@ import scala.concurrent.duration._
 
 
 object BankApp extends App with JsonSupport {
-//  val system = ActorSystem("bank-system")
+
   val log = LoggerFactory.getLogger("BankApp")
 
   implicit val timeout: Timeout = Timeout(30 seconds)
@@ -40,25 +34,13 @@ object BankApp extends App with JsonSupport {
   val result = bankBot ? BankBot.StartBank
   val bankManager = Await.result(result, timeout.duration).asInstanceOf[ActorRef]
 
-//  val bankManager = system.actorOf(BankManager.props(1, "admin"), "bank-manager")
-//  bankManager ! BankManager.CreateClient(1, "Sedi")
-
-//  try {
-//
-//    val bankBot = system.actorOf(BankBot.props(), "bank-bot")
-//
-//    bankBot ! BankBot.StartBank
-//    StdIn.readLine()
-//  } finally {
-//    system.terminate()
-//  }
   val route =
     pathPrefix("bank") {
       path("clients"){
         post {
           entity(as[ClientModelPostPut]) { clientModel =>
             complete {
-              (bankManager ? BankManager.CreateClient(clientModel.name))
+              (bankManager ? BankManager.CreateClient(clientModel.firstName, clientModel.lastName, clientModel.birthday))
                 .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
             }
           }
@@ -67,7 +49,6 @@ object BankApp extends App with JsonSupport {
           complete {
             (bankManager ? BankManager.GetClients)
               .mapTo[Either[BankManager.StatusInfo, BankManager.Clients]]
-//            (bankManager ? BankManager.GetClients).mapTo[BankManager.Response]
           }
         }
       }~
@@ -75,14 +56,13 @@ object BankApp extends App with JsonSupport {
         get{
           complete {
             (bankManager ? BankManager.GetClient(id))
-//              .mapTo[ClientModel]
               .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
           }
         }~
         put{
           entity(as[ClientModelPostPut]) { clientModel =>
             complete {
-              (bankManager ? BankManager.UpdateClient(id, clientModel.name))
+              (bankManager ? BankManager.UpdateClient(id, clientModel.firstName, clientModel.lastName, clientModel.birthday))
                 .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
             }
           }
@@ -114,7 +94,6 @@ object BankApp extends App with JsonSupport {
         get{
           complete {
             (bankManager ? BankManager.GetAccount(id))
-              //              .mapTo[ClientModel]
               .mapTo[Either[BankManager.StatusInfo, AccountModelGet]]
           }
         }~
@@ -132,7 +111,7 @@ object BankApp extends App with JsonSupport {
               .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
           }
         }~
-        pathPrefix("events"){
+        pathPrefix("transaction"){
           path("replenish"){
             put{
               entity(as[ReplenishAnAccountModel]) { replenishAnAccountModel =>
@@ -148,6 +127,16 @@ object BankApp extends App with JsonSupport {
               entity(as[WithdrawFromAccountModel]) { withdrawFromAccountModel =>
                 complete {
                   (bankManager ? BankManager.WithdrawFromAccount(id, withdrawFromAccountModel.value))
+                    .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
+                }
+              }
+            }
+          }~
+          path("transfer"){
+            put{
+              entity(as[BalanceTransfer]) { balanceTransfer =>
+                complete {
+                  (bankManager ? BankManager.BalanceTransfer(id, balanceTransfer.tAccountId, balanceTransfer.value, bankManager))
                     .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
                 }
               }

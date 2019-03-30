@@ -1,5 +1,7 @@
 package models
 
-case class ClientModelGet(id: BigInt, name: String) extends Model
+import akka.http.scaladsl.model.DateTime
 
-case class ClientModelPostPut(name: String)
+case class ClientModelGet(id: BigInt, firstName: String, lastName: String, birthday: String) extends Model
+
+case class ClientModelPostPut(firstName: String, lastName: String, birthday: String)

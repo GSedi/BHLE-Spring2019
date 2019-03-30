@@ -28,12 +28,6 @@ class BankBot extends Actor with ActorLogging{
       val result = bank ? Bank.CreateBankManager(1, "admin")
       val admin = Await.result(result, timeout.duration).asInstanceOf[ActorRef]
       sender() ! admin
-//      admin ! BankManager.CreateClient(1, "Sedi")
-//      Thread.sleep(2000)
-//      admin ! BankManager.CreateAccount(1, 1, "Debit")
-//      admin ! BankManager.ReplenishAnAccount(1, 1,  Some(500))
-//      admin ! BankManager.WithdrawFromAccount(1, 1, Some(501))
-
   }
 
 }
