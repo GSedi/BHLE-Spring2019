@@ -1,29 +1,34 @@
 package actors
 
 import akka.actor.{Actor, ActorLogging, Props}
-import models.ClientModel
+import models.ClientModelGet
 
 object Client {
-  def props(id: Long, name: String): Props = Props(new Client(id, name))
+  def props(id: BigInt): Props = Props(new Client(id))
 
   case object GetData
   case class SetData(name: String)
 }
 
-class Client(id: Long, name: String) extends Actor with ActorLogging{
+class Client(id: BigInt) extends Actor with ActorLogging{
   import Client._
 
-  override def preStart(): Unit = log.info(s"Client $name started")
-  override def postStop(): Unit = log.info(s"Client $name stopped")
+  override def preStart(): Unit = log.info(s"Client $id started")
+  override def postStop(): Unit = log.info(s"Client $id stopped")
+
+  var state: ClientModelGet = ClientModelGet(id, "")
 
   override def receive: Receive = {
     case GetData =>
       log.info("Received GetData request")
-      sender() ! ClientModel(id, name)
+      sender() ! state
 
     case SetData(clientName) =>
       log.info("Received SetData request")
-      sender() ! ClientModel(id, clientName)
+
+      state = ClientModelGet(state.id, clientName)
+//      sender() ! ClientModel(id, clientName)
+      sender() ! state
   }
 
 }

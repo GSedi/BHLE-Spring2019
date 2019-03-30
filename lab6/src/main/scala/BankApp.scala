@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives.path
-import models.{AccountModel, ClientModel}
+import models.{AccountModelPostPut, AccountModelGet, ClientModelGet, ClientModelPostPut, ReplenishAnAccountModel, WithdrawFromAccountModel}
 
 import scala.concurrent.{Await, ExecutionContextExecutor}
 import scala.util.{Failure, Success, Try}
@@ -56,19 +56,17 @@ object BankApp extends App with JsonSupport {
     pathPrefix("bank") {
       path("clients"){
         post {
-          entity(as[ClientModel]) { clientModel =>
+          entity(as[ClientModelPostPut]) { clientModel =>
             complete {
-              (bankManager ? BankManager.CreateClient(
-                clientModel.id, clientModel.name
-              )
-                )
-                .mapTo[BankManager.Response]
+              (bankManager ? BankManager.CreateClient(clientModel.name))
+                .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
             }
           }
         } ~
         get {
           complete {
-            (bankManager ? BankManager.GetClients).mapTo[BankManager.Clients]
+            (bankManager ? BankManager.GetClients)
+              .mapTo[Either[BankManager.StatusInfo, BankManager.Clients]]
 //            (bankManager ? BankManager.GetClients).mapTo[BankManager.Response]
           }
         }
@@ -78,80 +76,87 @@ object BankApp extends App with JsonSupport {
           complete {
             (bankManager ? BankManager.GetClient(id))
 //              .mapTo[ClientModel]
-              .mapTo[BankManager.Response]
+              .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
           }
         }~
         put{
-          entity(as[ClientModel]) { clientModel =>
+          entity(as[ClientModelPostPut]) { clientModel =>
             complete {
-              (bankManager ? BankManager.UpdateClient(
-                clientModel.id, clientModel.name
-              )
-                )
-                .mapTo[ClientModel]
+              (bankManager ? BankManager.UpdateClient(id, clientModel.name))
+                .mapTo[Either[BankManager.StatusInfo, ClientModelGet]]
             }
           }
         }~
         delete{
           complete {
             (bankManager ? BankManager.DeleteClient(id))
-              .mapTo[BankManager.Response]
+              .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
           }
         }
       }~
       path("accounts") {
         post {
-          entity(as[AccountModel]) { accountModel =>
+          entity(as[AccountModelPostPut]) { accountModel =>
             complete {
-              (bankManager ? BankManager.CreateAccount(
-                  accountModel.id, accountModel.clientId, accountModel.typeOf
-                  )
-                )
-                .mapTo[BankManager.Response]
+              (bankManager ? BankManager.CreateAccount(accountModel.clientId, accountModel.typeOf))
+                .mapTo[Either[BankManager.StatusInfo, AccountModelGet]]
             }
           }
         } ~
         get {
           complete {
             (bankManager ? BankManager.GetAccounts)
-              .mapTo[BankManager.Accounts]
+              .mapTo[Either[BankManager.StatusInfo, BankManager.Accounts]]
           }
         }
       }~
-      path("accounts" / IntNumber){ id =>
+      pathPrefix("accounts" / IntNumber){ id =>
         get{
           complete {
             (bankManager ? BankManager.GetAccount(id))
               //              .mapTo[ClientModel]
-              .mapTo[BankManager.Response]
+              .mapTo[Either[BankManager.StatusInfo, AccountModelGet]]
           }
         }~
-//        put{
-//          entity(as[ClientModel]) { clientModel =>
-//            complete {
-//              (bankManager ? BankManager.UpdateClient(
-//                clientModel.id, clientModel.name
-//              )
-//                )
-//                .mapTo[ClientModel]
-//            }
-//          }
-//        }~
-        delete{
+        put{
+          entity(as[AccountModelPostPut]) { accountModel =>
+            complete {
+              (bankManager ? BankManager.UpdatedAccount(id, accountModel.typeOf) )
+                .mapTo[Either[BankManager.StatusInfo, AccountModelGet]]
+            }
+          }
+        }~
+        delete {
           complete {
             (bankManager ? BankManager.CloseAccount(id))
-              .mapTo[BankManager.Response]
+              .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
           }
-//          path("events"){
-//            path("replenish"){
-//              post{
-//
-//              }
-//            }
-//          }
+        }~
+        pathPrefix("events"){
+          path("replenish"){
+            put{
+              entity(as[ReplenishAnAccountModel]) { replenishAnAccountModel =>
+                complete {
+                  (bankManager ? BankManager.ReplenishAnAccount(id, replenishAnAccountModel.value))
+                    .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
+                }
+              }
+            }
+          }~
+          path("withdraw"){
+            put{
+              entity(as[WithdrawFromAccountModel]) { withdrawFromAccountModel =>
+                complete {
+                  (bankManager ? BankManager.WithdrawFromAccount(id, withdrawFromAccountModel.value))
+                    .mapTo[Either[BankManager.StatusInfo, BankManager.StatusInfo]]
+                }
+              }
+            }
+          }
         }
       }
     }
+
   val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
   log.info("Listening on port 8080...")
 }

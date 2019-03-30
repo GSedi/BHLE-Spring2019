@@ -2,4 +2,6 @@ package models
 
 import utils.AccountType
 
-case class AccountModel(id: Long, clientId: Long, typeOf: String, volume: Double = 0.0)
+case class AccountModelGet(id: BigInt, clientId: BigInt, typeOf: String, volume: BigInt) extends Model
+
+case class AccountModelPostPut(clientId: BigInt, typeOf: String)
