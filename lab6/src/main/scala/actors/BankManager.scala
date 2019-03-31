@@ -232,11 +232,16 @@ class BankManager(id: BigInt, name: String) extends Actor with ActorLogging{
           log.error(s"Account with id: $fAccountId is not specified")
           sender() ! Left(StatusInfo(StatusCodes.NOT_FOUND, s"Account with accountId: $fAccountId is not specified"))
 
-        case Some(accountRef) =>
-          cntRequestId += 1
-          log.info(s"Replanish an Account $fAccountId")
-          accountRef ! Account.BalanceTransfer(cntRequestId, fAccountId, tAccountId, value, accounts, initSender)
-          context.become(waitingAck(sender()))
+        case Some(fAccountRef) =>
+          accounts.get(tAccountId) match {
+            case None =>
+              log.error(s"Account with id: $fAccountId is not specified")
+            case Some(tAccountRef) =>
+              cntRequestId += 1
+              log.info(s"Transfer balance from $fAccountId to $tAccountId")
+              tAccountRef ! Account.BalanceTransfer(cntRequestId, fAccountId, tAccountId, value, accounts, initSender)
+              context.become(waitingAck(sender()))
+          }
       }
   }
 
@@ -286,7 +291,7 @@ class BankManager(id: BigInt, name: String) extends Actor with ActorLogging{
       context.become(receive)
 
     case Account.NoAcknowledge(requestId, message) =>
-      replyTo ! Right(StatusInfo(StatusCodes.SUCCESS, message))
+      replyTo ! Right(StatusInfo(StatusCodes.BAD_REQUEST, message))
       context.become(receive)
 
     case ReceiveTimeout =>

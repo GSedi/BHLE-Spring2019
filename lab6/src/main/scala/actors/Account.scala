@@ -5,21 +5,25 @@ import utils.AccountType
 import akka.util.Timeout
 import models.AccountModelGet
 
+import scala.collection.mutable
+import scala.collection.mutable.Stack
 import scala.concurrent.duration._
 
 object Account {
   def props(id: BigInt, clientId: BigInt, typeOf: String): Props = Props(new Account(id, clientId, typeOf))
 
-  case class ReplenishAnAccount(requestId: BigInt, value: BigInt)
-  case class WithdrawFromAccount(requestId: BigInt, value: BigInt)
+  sealed trait AccountMessage
 
-  case class BalanceTransfer(requestId: BigInt, fAccountId: BigInt, tAccountId: BigInt, value: BigInt, accounts: Map[BigInt, ActorRef], initSender: ActorRef)
+  case class ReplenishAnAccount(requestId: BigInt, value: BigInt) extends AccountMessage
+  case class WithdrawFromAccount(requestId: BigInt, value: BigInt) extends AccountMessage
 
-  case class Acknowledge(id: BigInt, message: String)
-  case class NoAcknowledge(id: BigInt, message: String)
+  case class BalanceTransfer(requestId: BigInt, fAccountId: BigInt, tAccountId: BigInt, value: BigInt, accounts: Map[BigInt, ActorRef], initSender: ActorRef) extends AccountMessage
 
-  case object GetData
-  case class SetData(typeof: String)
+  case class Acknowledge(id: BigInt, message: String) extends AccountMessage
+  case class NoAcknowledge(id: BigInt, message: String) extends AccountMessage
+
+  case object GetData extends AccountMessage
+  case class SetData(typeof: String) extends AccountMessage
 }
 
 class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with ActorLogging {
@@ -30,6 +34,7 @@ class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with A
   var accountValue: BigInt = 0
   var state: AccountModelGet = AccountModelGet(id, clientId, "", accountValue)
   var ok: Boolean = true
+  var levels = Stack[(ActorRef, AccountMessage)]()
 
   override def preStart(): Unit = log.info(s"Account for $clientId started")
   override def postStop(): Unit = log.info(s"Account for $clientId stopped")
@@ -54,60 +59,26 @@ class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with A
 
     case BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender) =>
       log.info(s"Recieved BalanceTransfer request ${id}")
-      if(id == fAccountId){
+
+      if(!ok){
+//        initSender ! NoAcknowledge(requestId, "Something get wrong")
+
+      } else if(id == tAccountId){
+        val fref: ActorRef = accounts(fAccountId)
+        //        tref ! ReplenishAnAccount(requestId, value)
+        fref ! WithdrawFromAccount(requestId, value)
+//        levels.push(fref -> ReplenishAnAccount(requestId, value))
+        context.become(waitingAck(initSender, fref,fAccountId, tAccountId, value, accounts, ReplenishAnAccount(requestId, value)))
+
+      } else if(id == fAccountId){
         log.info(s"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV")
-        accounts(fAccountId) ! Account.WithdrawFromAccount(requestId, value)
-        context.become(waitingAck(initSender,accounts(fAccountId),fAccountId, tAccountId, value, accounts))
-
-//        accounts.get(tAccountId) match {
-//          case None =>
-//            log.info(s"Account $tAccountId does not exist")
-//            initSender ! NoAcknowledge(requestId, s"Account $tAccountId does not exist")
-//          case Some(tAccountRef) =>
-//            log.info(s"Account $tAccountId does exist")
-//            accounts.get(fAccountId) match {
-//              case None =>
-//                log.info(s"Account $fAccountId does not exist")
-//                initSender ! NoAcknowledge(requestId, s"Account $fAccountId does not exist")
-//              case Some(fAccountRef) =>
-//                log.info(s"Account $fAccountId  exist")
-//                fAccountRef ! Account.WithdrawFromAccount(requestId, value)
-//                context.become(waitingAck(initSender,tAccountRef,fAccountId, tAccountId, value, accounts))
-//
-//            }
-
-//        }
+        val tref: ActorRef = accounts(tAccountId)
+//        fref ! WithdrawFromAccount(requestId, value)
+        tref ! ReplenishAnAccount(requestId, value)
+//        levels.push(tref -> WithdrawFromAccount(requestId, value))
+        context.become(waitingAck(initSender, tref, fAccountId, tAccountId, value, accounts,  WithdrawFromAccount(requestId, value)))
 
       }
-      if(id == tAccountId){
-
-        accounts(tAccountId) ! Account.ReplenishAnAccount(requestId, value)
-        context.become(waitingAck(initSender, accounts(tAccountId),0, 0, value, accounts))
-
-//        accounts.get(fAccountId) match {
-//          case None =>
-//            log.info(s"Account $fAccountId does not exist")
-//            initSender ! NoAcknowledge(requestId, s"Account $fAccountId does not exist")
-//          case Some(fAccountRef) =>
-//            log.info(s"Account $fAccountId exist")
-//            accounts.get(tAccountId) match {
-//              case None =>
-//                log.info(s"Account $tAccountId does not exist")
-//                initSender ! NoAcknowledge(requestId, s"Account $tAccountId does not exist")
-//              case Some(tAccountRef) =>
-//                log.info(s"Account $tAccountId exist")
-//                tAccountRef ! Account.ReplenishAnAccount(requestId, value)
-//                context.become(waitingAck(initSender, fAccountRef,0, 0, value, accounts))
-//
-//            }
-
-        }
-        if (fAccountId == 0 && tAccountId == 0){
-          initSender ! Acknowledge(requestId, s"$value succefull transfered")
-        }
-        if(!ok){
-          initSender ! NoAcknowledge(requestId, "Something get wrong")
-        }
 
 
     case GetData =>
@@ -120,16 +91,31 @@ class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with A
       sender() ! state
   }
 
-  def waitingAck(initSender: ActorRef,replyTo: ActorRef, fAccountId: BigInt, tAccountId: BigInt, value: BigInt, accounts: Map[BigInt, ActorRef]): Receive = {
-    case Account.Acknowledge(requestId, message) =>
-      log.info(s"Account value: ascasdcascasdcadsc")
-      replyTo ! BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender)
+  def waitingAck(initSender: ActorRef,replyTo: ActorRef, fAccountId: BigInt, tAccountId: BigInt, value: BigInt, accounts: Map[BigInt, ActorRef], accMessage: AccountMessage): Receive = {
+    case Acknowledge(requestId, message) =>
+      log.info(s"$replyTo and $accMessage")
+      levels.push((replyTo, accMessage))
+      log.info(s"Levels value: ${levels.size}")
+      if (levels.size == 2){
+        initSender ! Acknowledge(requestId, s"$value succefull transfered")
+        levels.clear()
+      } else {
+        replyTo ! BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender)
+      }
       context.become(receive)
 
-    case Account.NoAcknowledge(requestId, message) =>
+    case NoAcknowledge(requestId, message) =>
       log.info(s"Account AAAAAAAAAAAAAAAAAAAAA: ascasdcascasdcadsc")
       ok = false
-      replyTo ! BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender)
+      while(levels.nonEmpty){
+        val inst: (ActorRef, AccountMessage) = levels.pop()
+//        inst._1 ! inst._2
+        log.info(s"AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIccount ${inst._2}")
+        inst._1.tell(inst._2, null)
+      }
+//      replyTo ! BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender)
+      initSender ! NoAcknowledge(requestId, message)
+      ok = true
       context.become(receive)
 
   }

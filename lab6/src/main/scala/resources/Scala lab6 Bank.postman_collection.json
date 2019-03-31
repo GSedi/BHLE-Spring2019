@@ -1,0 +1,1187 @@
+{
+	"info": {
+		"_postman_id": "0aa81b62-266d-430b-a47e-c2154304a92f",
+		"name": "Scala lab6 Bank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create client 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e7eb9ef3-7fc5-40d9-b4c7-b05d0d03bb55",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Sedi\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"11/10\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstName\": \"Sedi\",\n\t\"lastName\": \"Gamidov\",\n\t\"birthday\": \"11/10/1998\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get client 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "df048a83-b9d0-450a-87c4-a32225450ca1",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"11/10/1998\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Sedi\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create acc 1 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "568c7b78-82ad-4547-a2ca-0c181469e09d",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Debit\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"1\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"clientId\": 1,\n\t\"typeOf\": \"Debit\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get acc 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "23ae5824-4266-4104-9626-7a24c463fcb3",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"0\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Debit\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update client 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9e36689f-b0be-4832-800b-59ec3422d425",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"7\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Updated\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstName\": \"Sedi\",\n\t\"lastName\": \"Gamidov Updated\",\n\t\"birthday\": \"11/10/1997\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update acc 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1fd2976b-9e5a-468c-a7b5-c9d0ad38aa6a",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Credit\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"1\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"clientId\": 1231,\n\t\"typeOf\": \"Credit\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create client 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "84e23c65-1682-4766-bd4a-8051c14e0587",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"body\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"1991\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstName\": \"Somebody\",\n\t\"lastName\": \"Somenebody\",\n\t\"birthday\": \"01/01/1991\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get clients 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6ffeea9-1ea0-4fd9-bd88-3f656ce4fae4",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"/19\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"97\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Updated\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Somenebody\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create acc 2 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "00ab668f-92d0-4097-8cdf-3b02af1263dc",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Debit\");",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"1\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"clientId\": 1,\n\t\"typeOf\": \"Debit\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create acc 3 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1c0a2979-1078-4089-a228-6a91060cf978",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"3\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Deposit\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"clientId\": 2,\n\t\"typeOf\": \"Deposit\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get accs 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f782b602-5c70-43c4-a402-e2591e9d7c5f",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"1\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Credit\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Debit\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"sit\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "replenish acc 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f6cd9e5f-e8ad-4e1f-a251-63bc2a88da8f",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Succ\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"replenished\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 10000\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1/transaction/replenish",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1",
+						"transaction",
+						"replenish"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "withdraw acc 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "273a562f-535b-40ff-8313-a1fe7f181fdd",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Succ\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"withdrawal\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 1000\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1/transaction/withdraw",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1",
+						"transaction",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "withdraw acc 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76c75bfc-0698-491c-9d4b-8b71eddb822b",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"-999\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"400\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"too much\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 999\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/2/transaction/withdraw",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"2",
+						"transaction",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "replenish acc 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a2ecfb24-14d5-4fe3-b8fc-a65bfae34e49",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Succ\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"replenished\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 100000\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/3/transaction/replenish",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"3",
+						"transaction",
+						"replenish"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balance transfer 1 to 2 (1)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c11a0ca0-f6d9-4e27-a79f-1fb608853757",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"99 succ\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"transfered\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"tAccountId\": 2,\n\t\"value\": 99\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1/transaction/transfer",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1",
+						"transaction",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get accs 2 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "00c8c01c-8fce-4329-b76f-1de45907fd52",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Debit\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"100000\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete client 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "60d28eb0-1e85-4be7-ad42-3f7c3156dbba",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"removed\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Client\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get clients 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "67e96ea9-ff82-4ac7-9e8a-6e05a77ecdea",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"01/01/1991\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"body\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get accs 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8904ebb-5139-4d6a-a7be-c907f7edd31a",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"10000\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Deposit\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get client 1 (2)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d9e26700-f775-49c9-962a-2bda57b22c67",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"not found\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"404\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Client\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get acc 1 (2)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6557b133-b26c-4ebe-a015-525fd6ef8787",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"not specified\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"404\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Account\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "close acc 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "834c751e-f468-49e3-864a-a9762eabbb21",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"Account\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"200\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"3 closed\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts/3",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get clients 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f2cec6f7-0dec-4ddd-8cfe-c792fd64b5fe",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"01/01/1991\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"2\");",
+							"tests[\"Response code is 200\"] = responseBody.has(\"body\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get accs 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "15c9766b-dfd3-4754-9e41-a67c667931ca",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response code is 200\"] = responseBody.has(\"\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/bank/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bank",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
