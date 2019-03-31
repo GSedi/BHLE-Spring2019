@@ -61,21 +61,16 @@ class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with A
       log.info(s"Recieved BalanceTransfer request ${id}")
 
       if(!ok){
-//        initSender ! NoAcknowledge(requestId, "Something get wrong")
 
       } else if(id == tAccountId){
         val fref: ActorRef = accounts(fAccountId)
         //        tref ! ReplenishAnAccount(requestId, value)
         fref ! WithdrawFromAccount(requestId, value)
-//        levels.push(fref -> ReplenishAnAccount(requestId, value))
         context.become(waitingAck(initSender, fref,fAccountId, tAccountId, value, accounts, ReplenishAnAccount(requestId, value)))
 
       } else if(id == fAccountId){
-        log.info(s"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV")
         val tref: ActorRef = accounts(tAccountId)
-//        fref ! WithdrawFromAccount(requestId, value)
         tref ! ReplenishAnAccount(requestId, value)
-//        levels.push(tref -> WithdrawFromAccount(requestId, value))
         context.become(waitingAck(initSender, tref, fAccountId, tAccountId, value, accounts,  WithdrawFromAccount(requestId, value)))
 
       }
@@ -109,11 +104,9 @@ class Account(id: BigInt, clientId: BigInt, typeOf: String) extends Actor with A
       ok = false
       while(levels.nonEmpty){
         val inst: (ActorRef, AccountMessage) = levels.pop()
-//        inst._1 ! inst._2
         log.info(s"AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIccount ${inst._2}")
         inst._1.tell(inst._2, null)
       }
-//      replyTo ! BalanceTransfer(requestId, fAccountId, tAccountId, value, accounts, initSender)
       initSender ! NoAcknowledge(requestId, message)
       ok = true
       context.become(receive)
